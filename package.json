@@ -1,0 +1,30 @@
+{
+  "name": "nodejs-mongodb-helper",
+  "version": "1.0.0",
+  "description": "mongodb crud helper, writes by typescript",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "tsc-watch --onsuccess \"node dist/index.js\"",
+    "test": "tsc-watch --onsuccess \"node dist/test.js\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leyle/nodejs-mongodb-helper.git"
+  },
+  "keywords": [
+    "nodejs",
+    "typescript",
+    "mongodb"
+  ],
+  "author": "leyle@leyle.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leyle/nodejs-mongodb-helper/issues"
+  },
+  "homepage": "https://github.com/leyle/nodejs-mongodb-helper#readme",
+  "dependencies": {
+    "mongodb": "^4.1.0",
+    "tsc-watch": "^4.5.0",
+    "typescript": "^4.3.5"
+  }
+}
