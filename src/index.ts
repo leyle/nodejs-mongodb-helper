@@ -5,7 +5,7 @@ import { ObjectID, Document } from "bson";
 export class FindManyResult {
   total: number;
   data: any[];
-  // start from 0
+  // start from 1
   page: number;
   // means limit
   size: number;
@@ -28,10 +28,9 @@ export class ConnOption {
   password: string;
   database: string;
 
-  connURI(): string {
+  #connURI(): string {
     const uri = `mongodb://${this.username}:${this.password}@${this.hostport}/${this.database}?retryWrites=true&writeConcern=majority`;
-    console.debug("warning: password leaks");
-    console.debug(uri);
+    console.debug(uri.replace(`:${this.password}`, "******"));
     return uri;
   }
 
@@ -40,7 +39,7 @@ export class ConnOption {
   }
 
   async #mgoClient(): Promise<Db> {
-    this.#client = new MongoClient(this.connURI());
+    this.#client = new MongoClient(this.#connURI());
     try {
       await this.#client.connect();
       const database = this.#client.db(this.database);
@@ -111,7 +110,7 @@ export class ConnOption {
     return result;
   }
 
-  async updateOne<T extends Document = Document>(col: string, query: any, update: any, upsert: boolean = true): Promise<UpdateResult | Document> {
+  async updateOne<T extends Document = Document>(col: string, query: any, update: any, upsert: boolean = false): Promise<UpdateResult | Document> {
     const result = await this.#db.collection<T>(col).updateOne(
       query,
       {
