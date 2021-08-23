@@ -1,10 +1,13 @@
 import { ConnOption, getObjectID, CurT } from './index';
 import { DeleteResult } from 'mongodb';
 
-class SomeJson {
+// chaincode state
+class LedgerState {
   _id: string;
+  // id: string;
   dataId: string;
   data: any;
+  dataType: string;
   createT: CurT;
   updateT: CurT;
 }
@@ -25,11 +28,12 @@ function generateData(dataId: string) {
   return fruit;
 }
 
-function generateSJ(): SomeJson {
-  const sj = new SomeJson();
+function generateSJ(): LedgerState {
+  const sj = new LedgerState();
   sj._id = getObjectID();
   sj.dataId = "dataid-" + sj._id;
   sj.data = generateData(sj.dataId); 
+  sj.dataType = "Fruit";
   sj.createT = new CurT();
   sj.updateT = sj.createT;
   return sj;
@@ -69,27 +73,27 @@ async function debug() {
     "createT.t": 'asc',
   };
 
-  const page = 1
+  const page = 1;
   const size = 5;
 
   let result: any;
 
   // insert one document
-  await conn.insertOne<SomeJson>(collection, sj);
+  await conn.insertOne<LedgerState>(collection, sj);
   console.debug('insert one done.');
 
   // insert many documents
   const sj2 = generateSJ();
   const sj3 = generateSJ();
-  result = await conn.insertMany<SomeJson>(collection, [sj2, sj3]);
+  result = await conn.insertMany<LedgerState>(collection, [sj2, sj3]);
   console.debug('insert many done.');
 
   // query one document
-  const data = await conn.findOne<SomeJson>(collection, query, sort);
+  const data = await conn.findOne<LedgerState>(collection, query, sort);
   console.log(JSON.stringify(data));
 
   // query many documents
-  const datas = await conn.findMany<SomeJson>(collection, query2, page, size, sort);
+  const datas = await conn.findMany<LedgerState>(collection, query2, page, size, sort);
   console.debug(JSON.stringify(datas));
 
   // update one document
@@ -103,7 +107,7 @@ async function debug() {
     "status": "deleted",
     "updateT": new CurT(),
   }
-  result = await conn.updateOne<SomeJson>(collection, updFilter, updTarget, true);
+  result = await conn.updateOne<LedgerState>(collection, updFilter, updTarget, true);
   console.log(JSON.stringify(result));
 
   // update many documents
@@ -115,20 +119,20 @@ async function debug() {
     "data.origin": "HK",
     "updateT": new CurT(),
   };
-  result = await conn.updateMany<SomeJson>(collection, updFilter2, updTarget2);
+  result = await conn.updateMany<LedgerState>(collection, updFilter2, updTarget2);
   console.log(JSON.stringify(result));
 
   // detele one document
   const delQuery = {
     "dataId": "dataid-61224538c261dfc607a21439",
   };
-  result = await conn.deleteOne<SomeJson>(collection, delQuery);
+  result = await conn.deleteOne<LedgerState>(collection, delQuery);
   console.log(JSON.stringify(result));
 
   // delete many documents
   // here, delete all documents
   // const delQuery2 = {};
-  // result = await conn.deleteMany<SomeJson>(collection, delQuery2, true);
+  // result = await conn.deleteMany<LedgerState>(collection, delQuery2, true);
   // console.log(JSON.stringify(result));
 
   conn.close();
